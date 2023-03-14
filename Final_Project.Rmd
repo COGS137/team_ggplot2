@@ -1,0 +1,61 @@
+---
+title: "Final Project"
+author: "Lihao Liu, Zikang Chen, Hinn Zhang"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+## R Markdown
+
+Here we will load all the packages we need for this project.
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+## Introduction
+
+
+## Questions
+
+
+## Data
+
+
+
+### Data Import
+
+Here we will import the csv file into the studio and take a look at the data set.
+
+```{r}
+data <- read.csv("data.csv", sep = "\t")
+glimpse(data)
+```
+
+### Data Wrangling
+
+```{r}
+
+```
+
+
+## Analysis
+
+### Exploratory Data Analysis
+
+
+
+
+### Data Analysis
+
+
+
+### Results
+
+
+## Conclusion
+
+
+
