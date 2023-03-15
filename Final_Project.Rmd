@@ -42,9 +42,12 @@ glimpse(movies)
 
 ### Data Wrangling
 
-First, we will merge the two data sets so as to get each movie's rating and votes.
+First, we will merge the two data sets so as to get each movie's rating and votes and also leave only movies with us, since we are not considering TV shows.
 
 ```{r}
+#filter out only movies
+data <- data |> filter(type == "Movie")
+
 #get only the rating and voting columns
 movies <- movies[, c("title", "rating", "votes")]
 
