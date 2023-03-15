@@ -18,19 +18,21 @@ library(tidyverse)
 ## Introduction
 
 
+
 ## Questions
 
+1. 
 
 ## Data
 
-
+The data set we are going to explore is about Netflix Movies and TV Shows.
 
 ### Data Import
 
 Here we will import the csv file into the studio and take a look at the data set.
 
 ```{r}
-data <- read.csv("data.csv", sep = "\t")
+data <- read_csv("netflix_titles.csv")
 glimpse(data)
 ```
 
