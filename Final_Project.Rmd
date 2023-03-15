@@ -13,6 +13,8 @@ Here we will load all the packages we need for this project.
 
 ```{r message=FALSE, warning=FALSE}
 library(tidyverse)
+library(dplyr)
+library(skimr)
 ```
 
 ## Introduction
@@ -25,7 +27,7 @@ library(tidyverse)
 
 ## Data
 
-The data set we are going to explore is about Netflix Movies and TV Shows.
+The data set we are going to explore is about Netflix Movies and TV Shows. 
 
 ### Data Import
 
@@ -33,10 +35,27 @@ Here we will import the csv file into the studio and take a look at the data set
 
 ```{r}
 data <- read_csv("netflix_titles.csv")
+movies <- read_csv("n_movies.csv")
 glimpse(data)
+glimpse(movies)
 ```
 
 ### Data Wrangling
+
+First, we will merge the two data sets so as to get each movie's rating and votes.
+
+```{r}
+#get only the rating and voting columns
+movies <- movies[, c("title", "rating", "votes")]
+
+#merge the two data sets
+merged <- merge(data, movies, by = "title")
+glimpse(merged)
+```
+
+```{r}
+
+```
 
 ```{r}
 

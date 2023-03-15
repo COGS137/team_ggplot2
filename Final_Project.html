@@ -249,7 +249,9 @@ div.tocify {
 <div id="r-markdown" class="section level2">
 <h2>R Markdown</h2>
 <p>Here we will load all the packages we need for this project.</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
+<pre class="r"><code>library(tidyverse)
+library(dplyr)
+library(skimr)</code></pre>
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
@@ -283,6 +285,20 @@ div.tocify {
 ##   listed_in = col_character(),
 ##   description = col_character()
 ## )</code></pre>
+<pre class="r"><code>movies &lt;- read_csv(&quot;n_movies.csv&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   title = col_character(),
+##   year = col_character(),
+##   certificate = col_character(),
+##   duration = col_character(),
+##   genre = col_character(),
+##   rating = col_double(),
+##   description = col_character(),
+##   stars = col_character(),
+##   votes = col_number()
+## )</code></pre>
 <pre class="r"><code>glimpse(data)</code></pre>
 <pre><code>## Rows: 8,807
 ## Columns: 12
@@ -298,9 +314,44 @@ div.tocify {
 ## $ duration     &lt;chr&gt; &quot;90 min&quot;, &quot;2 Seasons&quot;, &quot;1 Season&quot;, &quot;1 Season&quot;, &quot;2 Seasons…
 ## $ listed_in    &lt;chr&gt; &quot;Documentaries&quot;, &quot;International TV Shows, TV Dramas, TV M…
 ## $ description  &lt;chr&gt; &quot;As her father nears the end of his life, filmmaker Kirst…</code></pre>
+<pre class="r"><code>glimpse(movies)</code></pre>
+<pre><code>## Rows: 9,957
+## Columns: 9
+## $ title       &lt;chr&gt; &quot;Cobra Kai&quot;, &quot;The Crown&quot;, &quot;Better Call Saul&quot;, &quot;Devil in Oh…
+## $ year        &lt;chr&gt; &quot;(2018– )&quot;, &quot;(2016– )&quot;, &quot;(2015–2022)&quot;, &quot;(2022)&quot;, &quot;(2022– )…
+## $ certificate &lt;chr&gt; &quot;TV-14&quot;, &quot;TV-MA&quot;, &quot;TV-MA&quot;, &quot;TV-MA&quot;, &quot;TV-MA&quot;, &quot;TV-MA&quot;, &quot;TV-…
+## $ duration    &lt;chr&gt; &quot;30 min&quot;, &quot;58 min&quot;, &quot;46 min&quot;, &quot;356 min&quot;, &quot;24 min&quot;, &quot;45 min…
+## $ genre       &lt;chr&gt; &quot;Action, Comedy, Drama&quot;, &quot;Biography, Drama, History&quot;, &quot;Cri…
+## $ rating      &lt;dbl&gt; 8.5, 8.7, 8.9, 5.9, 8.6, 7.8, 9.2, 9.5, 6.3, 6.2, 8.7, 4.7…
+## $ description &lt;chr&gt; &quot;Decades after their 1984 All Valley Karate Tournament bou…
+## $ stars       &lt;chr&gt; &quot;[&#39;Ralph Macchio, &#39;, &#39;William Zabka, &#39;, &#39;Courtney Henggele…
+## $ votes       &lt;dbl&gt; 177031, 199885, 501384, 9773, 15413, 116358, 502160, 18313…</code></pre>
 </div>
 <div id="data-wrangling" class="section level3">
 <h3>Data Wrangling</h3>
+<p>First, we will merge the two data sets so as to get each movie’s rating and votes.</p>
+<pre class="r"><code>#get only the rating and voting columns
+movies &lt;- movies[, c(&quot;title&quot;, &quot;rating&quot;, &quot;votes&quot;)]
+
+#merge the two data sets
+merged &lt;- merge(data, movies, by = &quot;title&quot;)
+glimpse(merged)</code></pre>
+<pre><code>## Rows: 4,747
+## Columns: 14
+## $ title        &lt;chr&gt; &quot;¡Ay, mi madre!&quot;, &quot;&#39;76&quot;, &quot;(Un)Well&quot;, &quot;#Alive&quot;, &quot;#AnneFran…
+## $ show_id      &lt;chr&gt; &quot;s3653&quot;, &quot;s307&quot;, &quot;s2141&quot;, &quot;s2037&quot;, &quot;s2305&quot;, &quot;s5973&quot;, &quot;s23…
+## $ type         &lt;chr&gt; &quot;Movie&quot;, &quot;Movie&quot;, &quot;TV Show&quot;, &quot;Movie&quot;, &quot;Movie&quot;, &quot;Movie&quot;, &quot;…
+## $ director     &lt;chr&gt; &quot;Frank Ariza&quot;, &quot;Izu Ojukwu&quot;, NA, &quot;Cho Il&quot;, &quot;Sabina Fedeli…
+## $ cast         &lt;chr&gt; &quot;Estefanía de los Santos, Secun de la Rosa, Terele Pávez,…
+## $ country      &lt;chr&gt; &quot;Spain&quot;, &quot;Nigeria&quot;, &quot;United States&quot;, &quot;South Korea&quot;, &quot;Ital…
+## $ date_added   &lt;chr&gt; &quot;July 19, 2019&quot;, &quot;August 4, 2021&quot;, &quot;August 12, 2020&quot;, &quot;Se…
+## $ release_year &lt;dbl&gt; 2019, 2016, 2020, 2020, 2019, 2020, 2020, 2016, 2014, 201…
+## $ rating.x     &lt;chr&gt; &quot;TV-MA&quot;, &quot;TV-PG&quot;, &quot;TV-MA&quot;, &quot;TV-MA&quot;, &quot;TV-14&quot;, &quot;TV-14&quot;, &quot;TV…
+## $ duration     &lt;chr&gt; &quot;81 min&quot;, &quot;118 min&quot;, &quot;1 Season&quot;, &quot;99 min&quot;, &quot;95 min&quot;, &quot;90 …
+## $ listed_in    &lt;chr&gt; &quot;Comedies, International Movies&quot;, &quot;Dramas, International …
+## $ description  &lt;chr&gt; &quot;When her estranged mother suddenly dies, a woman must fo…
+## $ rating.y     &lt;dbl&gt; 3.9, 5.6, 6.4, 6.3, 6.5, 5.3, 6.9, 5.2, 4.6, 5.2, 7.7, 7.…
+## $ votes        &lt;dbl&gt; 412, 234, 1089, 39285, 1569, 469, 317, 123, 579, 73, 2250…</code></pre>
 </div>
 </div>
 <div id="analysis" class="section level2">
