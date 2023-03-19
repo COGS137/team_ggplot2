@@ -23,7 +23,7 @@ library(skimr)
 
 ## Questions
 
-1. 
+1. Does a movie released during a holiday season tend to receive a lower rating?
 
 ## Data
 
@@ -57,7 +57,16 @@ glimpse(merged)
 ```
 
 ```{r}
+# rename columns
+merged <- merged |>
+  rename("certificate" = "rating.x",
+         "rating" = "rating.y")
 
+# convert dates from character to date type
+merged$date_added <- mdy(merged$date_added)
+
+# create a month column
+merged$month <- month(merged$date_added)
 ```
 
 ```{r}
@@ -69,8 +78,39 @@ glimpse(merged)
 
 ### Exploratory Data Analysis
 
+```{r}
+merged |>
+  ggplot(aes(x = release_year)) +
+  geom_bar() +
+  labs(x = "Year released",
+       y = "Number of movies",
+       title = "Most movies released after 2010s") +
+  theme(text = element_text(size = 15),
+        plot.title.position = "plot")
+```
 
+```{r}
+merged |>
+  ggplot(aes(x = rating)) +
+  geom_bar() +
+  labs(x = "Audience rating",
+       y = "Number of movies",
+       title = "Most movies receive rating of 5 - 7") +
+  theme(text = element_text(size = 15),
+        plot.title.position = "plot")
+```
 
+```{r}
+merged |>
+  ggplot(aes(x = month)) +
+  geom_bar() +
+  labs(x = "Month added",
+       y = "Number of movies",
+       title = "Movies are added all year round to Netflix") +
+  scale_x_continuous(breaks = seq(1, 12)) +
+  theme(text = element_text(size = 15),
+        plot.title.position = "plot")
+```
 
 ### Data Analysis
 
