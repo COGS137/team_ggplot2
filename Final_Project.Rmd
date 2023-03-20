@@ -55,7 +55,7 @@ movies <- movies[, c("title", "rating", "votes")]
 merged <- merge(data, movies, by = "title")
 glimpse(merged)
 ```
-
+We first want to rename the columns to make their names consistent. We also want to change the format of the date column from character to date for easier access. Then, we extract the month from the date so that we can generate plots in the EDA section.
 ```{r}
 # rename columns
 merged <- merged |>
@@ -78,17 +78,21 @@ merged$month <- month(merged$date_added)
 
 ### Exploratory Data Analysis
 
+We first want to see when the movies are released in this dataset.
 ```{r}
 merged |>
   ggplot(aes(x = release_year)) +
   geom_bar() +
   labs(x = "Year released",
        y = "Number of movies",
-       title = "Most movies released after 2010s") +
+       title = "Most movies released after 2010") +
   theme(text = element_text(size = 15),
         plot.title.position = "plot")
 ```
 
+We see that most movies are released after 2010, which suggest most movies are contemporary, so we might be able to draw conclusions using our current knowledge.
+
+We also want to see what ratings do movies generally receive.
 ```{r}
 merged |>
   ggplot(aes(x = rating)) +
@@ -100,6 +104,9 @@ merged |>
         plot.title.position = "plot")
 ```
 
+The plot shows most movies receive a rating in the range of 5 to 7, so we can infer that a rating above 7 tends to be a high rating, while a rating below 5 tends to be a low rating.
+
+We also want to see when movies are added to Netflix in a year.
 ```{r}
 merged |>
   ggplot(aes(x = month)) +
@@ -111,6 +118,8 @@ merged |>
   theme(text = element_text(size = 15),
         plot.title.position = "plot")
 ```
+
+The visualization shows movies are added to Netflix all year round, and there is a roughly even distribution of movies across all months. Therefore, we can safely carry out our analysis when we compare holiday seasons to non-holiday seasons.
 
 ### Data Analysis
 
