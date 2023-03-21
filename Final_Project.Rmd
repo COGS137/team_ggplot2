@@ -42,6 +42,8 @@ glimpse(movies)
 
 ### Data Wrangling
 
+Since the data set we eventually wish to utilize is not two separate tibbles, we need to find a way to take the combination of two data sets and conduct our analysis from the integrated tibble.
+
 First, we will merge the two data sets so as to get each movie's rating and votes and also leave only movies with us, since we are not considering TV shows.
 
 ```{r}
