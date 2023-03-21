@@ -148,7 +148,7 @@ ggplot(merged, aes(x = rating, y = duration)) +
   theme(plot.title.position = "plot")
 ```
 
-However, although we anticipated that the ratings of movies that are wither too long or too short may receive low ratings, we cannot actually get this conclusion from the plot. There seems to be no correlation between the duration and the rating of a movie just through observing the plot.
+However, although we anticipated that the ratings of movies that are either too long or too short may receive low ratings, we cannot actually get this conclusion from the plot. There seems to be no correlation between the duration and the rating of a movie just through observing the plot.
 
 We are also curious about the distribution of movie genres across different years. Since there are many years in the data, we are going to take a look at the distributions of the movie genre in three plots, from year 2010 to 2013, 2014 to 2017, and 2018 to 2021 respectively.
 ```{r}
