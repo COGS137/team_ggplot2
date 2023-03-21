@@ -142,7 +142,11 @@ Now we are done with checking the basis of our analysis, we want to gain more in
 ```{r}
 ggplot(merged, aes(x = rating, y = duration)) +
   geom_point() +
-  geom_smooth(method = "lm")
+  geom_smooth(method = "lm")+
+  labs(x = "Movie Ratings",
+       y = "Movie Durations",
+       title = "No clear correlation between the duration and the rating of a movie") +
+  theme(plot.title.position = "plot")
 ```
 
 However, although we anticipated that the ratings of movies that are wither too long or too short may receive low ratings, we cannot actually get this conclusion from the plot. There seems to be no correlation between the duration and the rating of a movie just through observing the plot.
