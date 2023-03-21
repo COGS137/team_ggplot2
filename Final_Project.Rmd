@@ -57,7 +57,8 @@ movies <- movies[, c("title", "rating", "votes")]
 merged <- merge(data, movies, by = "title")
 glimpse(merged)
 ```
-We first want to rename the columns to make their names consistent. We also want to change the format of the date column from character to date for easier access. Then, we extract the month from the date so that we can generate plots in the EDA section.
+
+Then we want to rename the columns to make their names consistent. We also want to change the format of the date column from character to date for easier access. Moreover, we extract the month from the date so that we can generate plots in the EDA section.
 ```{r}
 # rename columns
 merged <- merged |>
