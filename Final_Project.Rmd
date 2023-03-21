@@ -42,7 +42,7 @@ glimpse(movies)
 
 ### Data Wrangling
 
-Since the data set we eventually wish to utilize is not two separate tibbles, we need to find a way to take the combination of two data sets and conduct our analysis from the integrated tibble.
+Since the data set we eventually wish to utilize is not two separate tibbles, we need to find a way to extract the useful columns and take the combination of two data sets and conduct our analysis from the integrated tibble.
 
 First, we will merge the two data sets so as to get each movie's rating and votes and also leave only movies with us, since we are not considering TV shows.
 
@@ -58,22 +58,36 @@ merged <- merge(data, movies, by = "title")
 glimpse(merged)
 ```
 
-Then we want to rename the columns to make their names consistent. We also want to change the format of the date column from character to date for easier access. Moreover, we extract the month from the date so that we can generate plots in the EDA section.
+Then we want to rename the columns to make their names consistent. 
 ```{r}
 # rename columns
 merged <- merged |>
   rename("certificate" = "rating.x",
          "rating" = "rating.y")
+```
 
+We also want to change the format of the date column from character to date for easier access.
+```{r}
 # convert dates from character to date type
 merged$date_added <- mdy(merged$date_added)
+```
 
+Moreover, we extract the month from the date so that we can generate plots in the EDA section.
+```{r}
 # create a month column
 merged$month <- month(merged$date_added)
 ```
 
+Since we decide to set the unit of durations of movies into minutes, we can clean the column of Duration into a column of integers.
 ```{r}
+merged$duration <- substring(merged$duration, 1, nchar(merged$duration)-4)
+merged$duration <- as.integer(merged$duration)
+```
 
+
+
+```{r}
+glimpse(merged)
 ```
 
 
@@ -100,9 +114,9 @@ We also want to see what ratings do movies generally receive.
 merged |>
   ggplot(aes(x = rating)) +
   geom_bar() +
-  labs(x = "Audience rating",
+  labs(x = "Audience ratings",
        y = "Number of movies",
-       title = "Most movies receive rating of 5 - 7") +
+       title = "Most movies receive ratings of 5 - 7") +
   theme(text = element_text(size = 15),
         plot.title.position = "plot")
 ```
@@ -123,6 +137,15 @@ merged |>
 ```
 
 The visualization shows movies are added to Netflix all year round, and there is a roughly even distribution of movies across all months. Therefore, we can safely carry out our analysis when we compare holiday seasons to non-holiday seasons.
+
+Now we are done with checking the basis of our analysis, we want to gain more information from the data set to have a better understanding of it. One thing really triggered our interests is the relationship between ratings and the lengths of the movies.
+```{r}
+ggplot(merged, aes(x = rating, y = duration)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+However, although we anticipated that the ratings of movies that are wither too long or too short may receive low ratings, we cannot actually get this conclusion from the plot. There seems to be no correlation between the duration and the rating of a movie just through observing the plot.
 
 ### Data Analysis
 
