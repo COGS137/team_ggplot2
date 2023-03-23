@@ -131,7 +131,7 @@ glimpse(merged)
 
 ### Exploratory Data Analysis
 
-#### How many movies are released in each year upto 2020?
+#### How many movies are released in each year upto 2021?
 We first want to see when the movies are released in this dataset.
 ```{r}
 merged |>
@@ -153,9 +153,9 @@ merged |>
         legend.position = "none")
 ```
 
-#### The distribution of ratings
+We see that most movies are released after 2010, which suggest most movies are contemporary. We decide to focus on the movies released after 2010 when we answer our questions in the Data Analysis section, so that we can safely draw conclusions using our current knowledge.
 
-We see that most movies are released after 2010, which suggest most movies are contemporary, so we might be able to draw conclusions using our current knowledge.
+#### The distribution of ratings
 
 We also want to see what ratings do movies generally receive.
 ```{r}
@@ -193,7 +193,7 @@ merged |>
         axis.text.x = element_text(size = 7.5))
 ```
 
-#### How do user ratings differ in differnt time of the year?
+#### How do user ratings differ in different time of the year?
 
 ```{r}
 merged |>
@@ -399,37 +399,62 @@ merged |>
 We see that movies released more recently tend to receive slightly lower ratings than movies released earlier. This might be caused by a change in the public taste of movies, but we are not sure about the exact reasons behind this. 
 To be more accurate, let's build a model to see if such decreasing trend exists.
 ```{r}
+# create a data frame that contains data since 2010
 recent <- merged |>
   filter(release_year >= 2010)
 
+# convert release year to factors
 recent$release_year <- factor(recent$release_year)
 
-linear_reg() |>
+# fit a linear model with release year
+mod_yr <- linear_reg() |>
   set_engine("lm") |>
-  fit(rating ~ release_year, data = recent) |>
+  fit(rating ~ release_year, data = recent)
+
+mod_yr |>
   tidy()
+
+# check R^2
+glance(mod_yr)
 ```
 We can see from the model that, after 2010, where movies received an average rating of 5.47, people are indeed giving lower ratings, as we see the difference between each consecutive year and 2010 decreases, although not significant. People tend to give around 6.63 in 2011 and 6.54 in 2012, but only tend to give 6.15 in 2020 and 5.98 in 2021.
+
+To evaluate the strength of the fit of this model, we also checked the $R^2$ value, which turns out to be 0.027. Therefore, roughly only 2.7% of the variability in movie ratings can be explained by their release year. This suggests the year a movie is released might not be a strong and appropriate predictor for its rating.
 
 #### Question 2: Which movie genres receive the highest and lowest rating after 2010?
 
 To answer this question, we first create a linear model of rating and genre.
 ```{r}
-linear_reg() |>
+# fit a linear model
+mod_gr <- linear_reg() |>
   set_engine("lm") |>
-  fit(rating ~ genre, data = recent) |>
+  fit(rating ~ genre, data = recent)
+
+mod_gr |>
   tidy()
+
+# check R^2
+glance(mod_gr)
 ```
 We see that after 2010 action movies, the baseline genre, receive an average rating of 5.91. Musical movies receive an average rating of 7.58, which is the highest rating among all genres after 2010, while thrillers only receive an average rating of 5.37, which is the lowest rating among all genres after 2010. As for the most numerous movies in the dataset, documentaries receive an average rating of 6.89, dramas movies receive an average rating of 6.17, and comedies receive an average rating of 6.01. It is somewhat expected that thrillers receive low ratings, since most thrillers are of low quality.
 
-Adding year and genre to predict rating:
+The $R^2$ of this model is 0.13. Therefore, roughly 13% of the variability in movie ratings can be explained by their genre. This $R^2$ value is greater than that of the year model, so the genre might a better predictor for its rating than the year a movie is released in.
+
+We also wanted to add genre to the model created in Question 1 to see how it affects the rating.
 ```{r}
-linear_reg() |>
+mod_full <- linear_reg() |>
   set_engine("lm") |>
-  fit(rating ~ release_year + genre, data = recent) |>
+  fit(rating ~ release_year + genre, data = recent)
+
+mod_full |>
   tidy()
+
+# check R^2
+glance(mod_full)
 ```
-The model shows that, after 2010, when action movies received an average rating of 5.42, people give lower ratings across the years. People tend to give a rating of around 6.35 in 2011 and 6.36 in 2012, but only tend to give a rating of 5.79 in 2020 and 5.65 in 2021. Moreover, dramas receive a rating of 5.77 on average, comedies receive a rating of 5.61, and documentaries receive a rating of 6.49. It is worth noticing that musicals receive an average rating of 7.21, which is the highest-rated genre, while thrillers only receive an average rating of 4.98, which is the lowest-rated genre.
+The model shows that, after 2010, when action movies received an average rating of 5.42, people give lower ratings across the years. People tend to give a rating of around 6.35 in 2011 and 6.36 in 2012, but only tend to give a rating of 5.79 in 2020 and 5.65 in 2021. Moreover, dramas receive a rating of 5.77 on average, comedies receive a rating of 5.61, and documentaries receive a rating of 6.49. It is worth noticing that musicals receive an average rating of 7.21, which makes it the highest-rated genre, while thrillers only receive an average rating of 4.98, which makes it the lowest-rated genre.
+
+The adjusted $R^2$ of this model is 0.15. Therefore, roughly 15% of the variability in movie ratings can be explained by their genre and release year. 
 
 
 #### Question 3: Does a movie released during a holiday season tend to receive a lower rating?
@@ -471,6 +496,7 @@ summary(anova_model)
 Since the p-value is larger than 0.05, we fail to reject the null hypothesis. So there is not a difference between the movie ratings made during holiday season and other months.
 
 ### Results
+* Q1
 
 
 ## Conclusion
