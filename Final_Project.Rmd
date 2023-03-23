@@ -30,20 +30,17 @@ These voluntary ratings are vital for saving time and getting valuable insights 
 
 To further investigate movie reviews, we identified the popular movie review site IMDb as the source of user comments and ratings of movies available on the most-anticipated streaming service Netflix as the research scope. Our quantitative analysis considers user scores as the component to evaluate the underlying trend among user inputs. This approach is based on the typical user flow. Specifically, users enquire about the quality of a movie through three steps: search for the movie, look at the rating scores, and click to see textual reviews if interested or necessary. User rating scores are the first-available information in the process and should have a deciding factor in the selection process.
 
-[^1]https://towardsdatascience.com/the-4-recommendation-engines-that-can-predict-your-movie-tastes-109dc4e10c52
-[^2]https://link.springer.com/article/10.1007/s10796-017-9800-0
-[^3]https://stephenfollows.com/are-film-critics-becoming-out-of-sync-with-audiences/
-[^4]https://news.usc.edu/144379/usc-study-finds-film-critics-like-filmmakers-are-largely-white-and-male/
+[^1]: https://towardsdatascience.com/the-4-recommendation-engines-that-can-predict-your-movie-tastes-109dc4e10c52
+[^2]: https://link.springer.com/article/10.1007/s10796-017-9800-0
+[^3]: https://stephenfollows.com/are-film-critics-becoming-out-of-sync-with-audiences/
+[^4]: https://news.usc.edu/144379/usc-study-finds-film-critics-like-filmmakers-are-largely-white-and-male/
 
-We define the holiday season to be from Thanksgiving to Christmas, which is from November to December.
 
 ## Problem Statement 
 
-Moviegoers who are interested in evaluation of movies before consumption have limited knowledge about how online user reviews work and their subjectivity to misinformation. By looking at the trend of recent year review, we hope to achieve a more guided overview of online user ratings to provide a better decision-making process for users.
+Moviegoers who are interested in the evaluation of movies before consumption has limited knowledge about how online user reviews work and their subjectivity to misinformation. By looking at the trend of recent year’s reviews, we hope to achieve a more guided overview of online viewer ratings to provide a better decision-making process for viewers. 
 
-1. Do people give higher ratings over the years since 2010?
-2. Which movie genre receive the highest and lowest rating after 2010?
-3. Does a movie released during a holiday season tend to receive a lower rating?
+Alternatively, are the reviews available on IMDb reliable in correctly reflecting the quality of the movie or are they influenced by external factors that are less relevant to movies?
 
 ## Data
 
@@ -463,7 +460,9 @@ The adjusted $R^2$ of this model is 0.15. Therefore, roughly 15% of the variabil
 
 #### Question 3: Does a movie released during a holiday season tend to receive a lower rating?
 
-The mean ratings for movies issued during holiday seasons.
+We define the holiday season to be from Thanksgiving to Christmas, which is from November to December.
+
+The mean ratings for movies issued during holiday seasons. 
 ```{r}
 recent |>
   filter(month == 11 | month == 12) |>
