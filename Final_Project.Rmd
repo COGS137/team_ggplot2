@@ -16,6 +16,7 @@ library(tidyverse)
 library(dplyr)
 library(skimr)
 library(viridis)
+library(tidymodels)
 ```
 
 ## Introduction
@@ -105,7 +106,9 @@ merged |>
        title = "Most movies released after 2010") +
   theme(text = element_text(size = 15),
         plot.title.position = "plot") +
-  theme_minimal()
+  theme_minimal() +
+  geom_vline(xintercept = 2010, color = "red") +
+  annotate("text", x = 2010, y = 250, label = "Year  2010", color = "red", size = 4)
 ```
 
 We see that most movies are released after 2010, which suggest most movies are contemporary, so we might be able to draw conclusions using our current knowledge.
@@ -128,7 +131,7 @@ The plot shows most movies receive a rating in the range of 5 to 7, so we can in
 We also want to see how movie ratings have changed since 2010, since most movies are released after 2010.
 ```{r}
 merged |>
-  filter(release_year > 2010) |>
+  filter(release_year >= 2010) |>
   ggplot(aes(x = release_year, y = rating)) +
   geom_jitter() +
   geom_smooth(method = "lm") +
@@ -158,6 +161,36 @@ merged |>
 ```
 
 The visualization shows movies are added to Netflix all year round, and there is a roughly even distribution of movies across all months. Therefore, we can safely carry out our analysis when we compare holiday seasons to non-holiday seasons.
+
+```{r}
+merged |>
+  filter(month == 11 | month == 12 | month == 1) |>
+  summarise(mean = mean(rating, na.rm = TRUE))
+
+merged |>
+  filter(month == 11 | month == 12 | month == 1) |>
+  ggplot(aes(x = rating)) +
+  geom_bar() +
+  labs(x = "Audience ratings",
+       y = "Number of movies",
+       title = "") +
+  theme(text = element_text(size = 15),
+        plot.title.position = "plot") +
+  theme_minimal()
+```
+
+```{r}
+mean(merged$rating, na.rm = TRUE)
+```
+
+```{r}
+merged |>
+  filter(release_year > 2010) |>
+  ggplot(aes(x = month, y = rating)) +
+  geom_jitter() +
+  geom_smooth(method = "lm")
+```
+
 
 Now we are done with checking the basis of our analysis, we want to gain more information from the data set to have a better understanding of it. One thing really triggered our interests is the relationship between ratings and the lengths of the movies.
 ```{r}
@@ -248,6 +281,15 @@ From the plots we can clearly observe that "International Movies", "Dramas", and
 
 ### Data Analysis
 
+```{r}
+recent <- merged |>
+  filter(release_year > 2010)
+
+linear_reg() |>
+  set_engine("lm") |>
+  fit(rating ~ release_year, data = recent) |>
+  tidy()
+```
 
 
 ### Results
