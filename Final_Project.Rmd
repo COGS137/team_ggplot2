@@ -25,7 +25,8 @@ library(tidymodels)
 
 ## Questions
 
-1. Does a movie added to Netflix during a holiday season tend to receive a lower rating?
+1. Are people giving higher rates across years?
+2. Does a movie added to Netflix during a holiday season tend to receive a lower rating?
 
 ## Data
 
