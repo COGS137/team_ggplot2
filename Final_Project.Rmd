@@ -374,6 +374,7 @@ merged |>
   summarise(count = n()) |>
   arrange(desc(count))
 ```
+
 After simplifying, we see that "Dramas", "Comedies", and "Documentaries" are now the most-frequently appeared genres since 2010.
 
 ### Data Analysis
@@ -417,6 +418,7 @@ mod_yr |>
 # check R^2
 glance(mod_yr)
 ```
+
 We can see from the model that, after 2010, where movies received an average rating of 5.47, people are indeed giving lower ratings, as we see the difference between each consecutive year and 2010 decreases, although not significant. People tend to give around 6.63 in 2011 and 6.54 in 2012, but only tend to give 6.15 in 2020 and 5.98 in 2021.
 
 To evaluate the strength of the fit of this model, we also checked the $R^2$ value, which turns out to be 0.027. Therefore, roughly only 2.7% of the variability in movie ratings can be explained by their release year. This suggests the year a movie is released might not be a strong and appropriate predictor for its rating.
@@ -436,6 +438,7 @@ mod_gr |>
 # check R^2
 glance(mod_gr)
 ```
+
 We see that after 2010 action movies, the baseline genre, receive an average rating of 5.91. Musical movies receive an average rating of 7.58, which is the highest rating among all genres after 2010, while thrillers only receive an average rating of 5.37, which is the lowest rating among all genres after 2010. As for the most numerous movies in the dataset, documentaries receive an average rating of 6.89, dramas movies receive an average rating of 6.17, and comedies receive an average rating of 6.01. It is somewhat expected that thrillers receive low ratings, since most thrillers are of low quality.
 
 The $R^2$ of this model is 0.13. Therefore, roughly 13% of the variability in movie ratings can be explained by their genre. This $R^2$ value is greater than that of the year model, so the genre might a better predictor for its rating than the year a movie is released in.
@@ -452,6 +455,7 @@ mod_full |>
 # check R^2
 glance(mod_full)
 ```
+
 The model shows that, after 2010, when action movies received an average rating of 5.42, people give lower ratings across the years. People tend to give a rating of around 6.35 in 2011 and 6.36 in 2012, but only tend to give a rating of 5.79 in 2020 and 5.65 in 2021. Moreover, dramas receive a rating of 5.77 on average, comedies receive a rating of 5.61, and documentaries receive a rating of 6.49. It is worth noticing that musicals receive an average rating of 7.21, which makes it the highest-rated genre, while thrillers only receive an average rating of 4.98, which makes it the lowest-rated genre.
 
 The adjusted $R^2$ of this model is 0.15. Therefore, roughly 15% of the variability in movie ratings can be explained by their genre and release year. 
@@ -479,6 +483,7 @@ recent$month <- factor(recent$month)
 mod <- lm(rating ~ month, data = recent)
 tidy(mod)
 ```
+
 The table shows that the movie ratings in November and December are not significantly different from other months in a year, but we cannot be sure to make this conclusion. Therefore, we will conduct an ANOVA test below to check the difference. Our null hypothesis is that there is no significant difference between the movie ratings made during holiday season and other months.
 
 ```{r}
