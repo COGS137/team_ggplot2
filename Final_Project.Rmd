@@ -42,7 +42,8 @@ We define the holiday season to be from Thanksgiving to Christmas, which is from
 Moviegoers who are interested in evaluation of movies before consumption have limited knowledge about how online user reviews work and their subjectivity to misinformation. By looking at the trend of recent year review, we hope to achieve a more guided overview of online user ratings to provide a better decision-making process for users.
 
 1. Do people give higher ratings over the years since 2010?
-2. Does a movie released during a holiday season tend to receive a lower rating?
+2. Which movie genre receive the highest and lowest rating after 2010?
+3. Does a movie released during a holiday season tend to receive a lower rating?
 
 ## Data
 
@@ -184,7 +185,7 @@ merged |>
   labs(x = "Month added",
        y = "Number of movies",
        title = "Movies are added all year round to Netflix",
-       subtitle = "Movies are not adde more frequently during holiday season (Nov - Dec)") +
+       subtitle = "Movies are not added more frequently during holiday season (Nov - Dec)") +
   scale_fill_grey(start = 0.75, end = 0.35) +
   theme_classic() +
   theme(legend.position = "none",
@@ -261,33 +262,24 @@ ggplot(merged, aes(x = rating, y = duration)) +
        y = "Movie Durations",
        title = "No clear correlation between the duration and the rating of a movie") +
   theme_classic() +
-  theme(
-        plot.title.position = "plot",
+  theme(plot.title.position = "plot",
         axis.text.x = element_text(size = 7.5),
         legend.position = "none")
 ```
 
 However, although we anticipated that the ratings of movies that are either too long or too short may receive low ratings, we cannot actually get this conclusion from the plot. There seems to be no correlation between the duration and the rating of a movie just through observing the plot.
 
-We are also curious about the distribution of movie genres across different years. Since there are many years in the data, we are going to take a look at the distributions of the movie genre in three plots, from year 2010 to 2013, 2014 to 2017, and 2018 to 2021 respectively.
-
+We are also curious about the what movie genres are included in the dataset.
 ```{r}
 merged |>
+  filter(release_year >= 2010) |>
   separate_rows(listed_in, sep = ", ") |> 
   group_by(listed_in) |> 
   summarise(count = n()) |>
   arrange(desc(count))
 ```
 
-```{r}
-merged |>
-  mutate(genre = case_when(
-    listed_in == "Horror Movies" ~ "Thrillers",
-    listed_in %in% "Dramas" ~ "Dramas",
-    listed_in %in% "Dramas" ~ "Dramas",))
-```
-
-
+We see that "International Movies", "Dramas", and "Comedies" appear the most frequently. We wanted to see if this still holds true in each year since 2010, so we will check the distribution of movie genres across different years. Since there are many years in the data, we are going to take a look at the distributions of the movie genres in three plots, from year 2010 to 2013, 2014 to 2017, and 2018 to 2021 respectively.
 ```{r}
 #create a tibble in longer format with rows for each combination of movie name and movie type from 2010 to 2013
 merged_long_10_13 <- merged |>
@@ -324,7 +316,7 @@ ggplot(merged_long_10_13, aes(x = release_year, y = count, fill = reorder(listed
   labs(x = "Years",
        y = "Count of each movie genre",
        title = "The distributions of movie genres across years") +
-  theme_minimal() +
+  theme_classic() +
   theme(plot.margin = unit(c(0, 0, 0, 0), "cm"),
         plot.title.position = "plot") +
   guides(fill = guide_legend("Movie Genres"))
@@ -338,7 +330,7 @@ ggplot(merged_long_14_17, aes(x = release_year, y = count, fill = reorder(listed
   labs(x = "Years",
        y = "Count of each movie genre",
        title = "The distributions of movie genres across years") +
-  theme_minimal() +
+  theme_classic() +
   theme(plot.margin = unit(c(0, 0, 0, 0), "cm"),
         plot.title.position = "plot") +
   guides(fill = guide_legend("Movie Genres"))
@@ -352,13 +344,37 @@ ggplot(merged_long_18_21, aes(x = release_year, y = count, fill = reorder(listed
   labs(x = "Years",
        y = "Count of each movie genre",
        title = "The distributions of movie genres across years") +
-  theme_minimal() +
+  theme_classic() +
   theme(plot.margin = unit(c(0, 0, 0, 0), "cm"),
         plot.title.position = "plot") +
   guides(fill = guide_legend("Movie Genres"))
 ```
 
-From the plots we can clearly observe that "International Movies", "Dramas", and "Comedies" appeared the most often from year 2010 to 2021. Can this possibly indicate any trends about the public's movie tastes? Further researches are needed to gain more insights.
+From the plots we can clearly observe that "International Movies", "Dramas", and "Comedies" appeared the most often in most of the years from 2010 to 2021. Can this possibly indicate any trends about the public's movie tastes? Further researches are needed to gain more insights.
+
+We found that the majority of the movies has several genres attached to it, so we wanted to simplify the genres to include only one category. 
+```{r}
+merged <- merged |>
+  mutate(genre = case_when(
+    grepl("Dramas", listed_in) ~ "Dramas",
+    grepl("Comedies", listed_in) ~ "Comedies",
+    grepl("Comedy", listed_in) ~ "Comedies",
+    grepl("Documentaries", listed_in) ~ "Documentaries",
+    grepl("Thrillers", listed_in) ~ "Thrillers",
+    grepl("Action", listed_in) ~ "Action",
+    grepl("Children", listed_in) ~ "Children",
+    grepl("Romantic", listed_in) ~ "Romantic",
+    grepl("Horror Movies", listed_in) ~ "Thrillers",
+    grepl("Music", listed_in) ~ "Music",
+    TRUE ~ NA))
+
+merged |>
+  filter(release_year >= 2010) |>
+  group_by(genre) |>
+  summarise(count = n()) |>
+  arrange(desc(count))
+```
+After simplifying, we see that "Dramas", "Comedies", and "Documentaries" are now the most-frequently appeared genres since 2010.
 
 ### Data Analysis
 
@@ -393,18 +409,30 @@ linear_reg() |>
   fit(rating ~ release_year, data = recent) |>
   tidy()
 ```
+We can see from the model that, after 2010, where movies received an average rating of 5.47, people are indeed giving lower ratings, as we see the difference between each consecutive year and 2010 decreases, although not significant. People tend to give around 6.63 in 2011 and 6.54 in 2012, but only tend to give 6.15 in 2020 and 5.98 in 2021.
 
-We can see from the model that, compared to the baseline year 2010, where movies received an average rating of 5.47, people are indeed giving lower ratings, although not significant. People tend to give around 6.63 in 2011 and 6.54 in 2012, but only tend to give 6.15 in 2020 and 5.98 in 2021.
+#### Question 2: Which movie genres receive the highest and lowest rating after 2010?
 
+To answer this question, we first create a linear model of rating and genre.
 ```{r}
 linear_reg() |>
   set_engine("lm") |>
-  fit(rating ~ release_year + listed_in, data = recent) |>
+  fit(rating ~ genre, data = recent) |>
   tidy()
 ```
+We see that after 2010 action movies, the baseline genre, receive an average rating of 5.91. Musical movies receive an average rating of 7.58, which is the highest rating among all genres after 2010, while thrillers only receive an average rating of 5.37, which is the lowest rating among all genres after 2010. As for the most numerous movies in the dataset, documentaries receive an average rating of 6.89, dramas movies receive an average rating of 6.17, and comedies receive an average rating of 6.01. It is somewhat expected that thrillers receive low ratings, since most thrillers are of low quality.
+
+Adding year and genre to predict rating:
+```{r}
+linear_reg() |>
+  set_engine("lm") |>
+  fit(rating ~ release_year + genre, data = recent) |>
+  tidy()
+```
+The model shows that, after 2010, when action movies received an average rating of 5.42, people give lower ratings across the years. People tend to give a rating of around 6.35 in 2011 and 6.36 in 2012, but only tend to give a rating of 5.79 in 2020 and 5.65 in 2021. Moreover, dramas receive a rating of 5.77 on average, comedies receive a rating of 5.61, and documentaries receive a rating of 6.49. It is worth noticing that musicals receive an average rating of 7.21, which is the highest-rated genre, while thrillers only receive an average rating of 4.98, which is the lowest-rated genre.
 
 
-#### Question 2: Does a movie released during a holiday season tend to receive a lower rating?
+#### Question 3: Does a movie released during a holiday season tend to receive a lower rating?
 
 The mean ratings for movies issued during holiday seasons.
 ```{r}
@@ -423,12 +451,7 @@ We see that the average rating is slightly higher for the movies released during
 ```{r}
 recent$month <- factor(recent$month)
 
-glimpse(recent)
-```
-
-```{r}
 mod <- lm(rating ~ month, data = recent)
-
 tidy(mod)
 ```
 The table shows that the movie ratings in November and December are not significantly different from other months in a year, but we cannot be sure to make this conclusion. Therefore, we will conduct an ANOVA test below to check the difference. Our null hypothesis is that there is no significant difference between the movie ratings made during holiday season and other months.
