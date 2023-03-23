@@ -130,24 +130,6 @@ merged |>
 
 The plot shows most movies receive a rating in the range of 5 to 7, so we can infer that a rating above 7 tends to be a high rating, while a rating below 5 tends to be a low rating.
 
-We also want to see how movie ratings have changed since 2010, since most movies are released after 2010.
-```{r}
-merged |>
-  filter(release_year >= 2010) |>
-  ggplot(aes(x = release_year, y = rating)) +
-  geom_jitter() +
-  geom_smooth(method = "lm") +
-  labs(x = "Year released",
-       y = "Movie ratings",
-       title = "More recent movies received slightly lower ratings") +
-  scale_x_continuous(breaks = seq(2010, 2021)) +
-  theme(text = element_text(size = 15),
-        plot.title.position = "plot") +
-  theme_minimal()
-```
-
-We see that movies released more recently tend to receive slightly lower ratings than movies released earlier. This might be caused by a change in the public taste of movies.
-
 We also want to see when movies are added to Netflix in a year.
 ```{r}
 merged |>
@@ -277,11 +259,24 @@ From the plots we can clearly observe that "International Movies", "Dramas", and
 
 #### Do people give higher ratings over the years since 2010?
 
+To find out if people give higher ratings over the years since 2010, let's take a look from the plot first to see if there is any clear trend.
 ```{r}
-
+merged |>
+  filter(release_year >= 2010) |>
+  ggplot(aes(x = release_year, y = rating)) +
+  geom_jitter() +
+  geom_smooth(method = "lm") +
+  labs(x = "Year released",
+       y = "Movie ratings",
+       title = "More recent movies received slightly lower ratings") +
+  scale_x_continuous(breaks = seq(2010, 2021)) +
+  theme(text = element_text(size = 15),
+        plot.title.position = "plot") +
+  theme_minimal()
 ```
 
-
+We see that movies released more recently tend to receive slightly lower ratings than movies released earlier. This might be caused by a change in the public taste of movies, but we are not sure about the exact reasons behind this. 
+To be more accurate, let's build a model to see if such decreasing trend exists.
 ```{r}
 recent <- merged |>
   filter(release_year >= 2010)
@@ -294,7 +289,7 @@ linear_reg() |>
   tidy()
 ```
 
-We can see that, compared to the baseline year of 2010, where movies received 
+We can see from the model that, compared to the baseline year 2010, where movies received an average rating of 5.47, people are indeed giving lower ratings, although not significant. People tend to give around 6.63 in 2011 and 6.54 in 2012, but only tend to give 6.15 in 2020 and 5.98 in 2021.
 
 #### Question 2: Does a movie released during a holiday season tend to receive a lower rating?
 
