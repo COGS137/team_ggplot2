@@ -294,6 +294,8 @@ mean(merged$rating, na.rm = TRUE)
 recent <- merged |>
   filter(release_year > 2010)
 
+recent$release_year <- factor(recent$release_year)
+
 linear_reg() |>
   set_engine("lm") |>
   fit(rating ~ release_year, data = recent) |>
