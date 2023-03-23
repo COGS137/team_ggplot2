@@ -294,7 +294,7 @@ linear_reg() |>
   tidy()
 ```
 
-We can see that, compared to the 
+We can see that, compared to the baseline year of 2010, 
 
 #### Question 2: Does a movie released during a holiday season tend to receive a lower rating?
 
@@ -302,15 +302,15 @@ The mean ratings for movies issued during holiday seasons.
 ```{r}
 recent |>
   filter(month == 11 | month == 12) |>
-  summarise(mean = mean(rating, na.rm = TRUE))
+  summarise(`mean rating` = mean(rating, na.rm = TRUE))
 ```
 
 The overall mean ratings of all movies.
 ```{r}
-mean(merged$rating, na.rm = TRUE)
+mean(recent$rating, na.rm = TRUE)
 ```
 
-We see that the average rating is 
+We see that the average rating is slightly higher for the movies released during the holiday season.
 
 ### Results
 
