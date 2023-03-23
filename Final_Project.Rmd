@@ -17,28 +17,61 @@ library(dplyr)
 library(skimr)
 library(viridis)
 library(tidymodels)
+library(ggridges)
 ```
 
 ## Introduction
 
+Imagine sitting on your couch and thinking about winding down from a day of busy work. You turn on your streaming services to pick your movie for the night. And yet, you are now just realizing that the paradox of choice reveals the real challenge of the day. Despite having thousands of movies, TV shows, and video content available at our fingertips, we often find ourselves scrolling through countless options but still not being able to decide. 
+
+Some might argue that the existing recommendation systems that are based on prior searching and watch history help elevate the effort of finding taste-matching content.[^1] However, this might not hold true for everyone. Research has shown that history-based algorithms do not account for individual differences, such as personalities, which largely affect the user’s willingness to accept the recommendations.[^2] Another channel that does not constrain options to within the scope of users’ preference to get inspiration for a movie night is by referring to online user ratings, such as those on IMDb. Similar to online shopping, checking out the reviews before committing three hours to a movie gives reassurance and a chance to quantitatively compare choices. 
+
+These voluntary ratings are vital for saving time and getting valuable insights into a movie’s strengths and weaknesses. Yet, how reliable are the user reviews? Some researchers have found an increasing discrepancy between critic scores and user ratings.[^3] And that the general public is giving out less indicative scores of the quality of the film. Besides the uncertainty on credibility, user reviews progressively suffer from the lack of variability in user diversity.[^4] These aforementioned phenomena give rise to the question of whether user reviews lose their value over time. Consequently, in this project, we aim to analyze user reviews to offer more context for users to effectively and correctly interpret online information about movies. 
+
+To further investigate movie reviews, we identified the popular movie review site IMDb as the source of user comments and ratings of movies available on the most-anticipated streaming service Netflix as the research scope. Our quantitative analysis considers user scores as the component to evaluate the underlying trend among user inputs. This approach is based on the typical user flow. Specifically, users enquire about the quality of a movie through three steps: search for the movie, look at the rating scores, and click to see textual reviews if interested or necessary. User rating scores are the first-available information in the process and should have a deciding factor in the selection process.
+
+[^1]https://towardsdatascience.com/the-4-recommendation-engines-that-can-predict-your-movie-tastes-109dc4e10c52
+[^2]https://link.springer.com/article/10.1007/s10796-017-9800-0
+[^3]https://stephenfollows.com/are-film-critics-becoming-out-of-sync-with-audiences/
+[^4]https://news.usc.edu/144379/usc-study-finds-film-critics-like-filmmakers-are-largely-white-and-male/
 
 We define the holiday season to be from Thanksgiving to Christmas, which is from November to December.
 
-## Questions
+## Problem Statement 
+
+Moviegoers who are interested in evaluation of movies before consumption have limited knowledge about how online user reviews work and their subjectivity to misinformation. By looking at the trend of recent year review, we hope to achieve a more guided overview of online user ratings to provide a better decision-making process for users.
 
 1. Do people give higher ratings over the years since 2010?
 2. Does a movie released during a holiday season tend to receive a lower rating?
 
 ## Data
 
-The data set we are going to explore is about Netflix Movies and TV Shows. 
+The two datasets for this project are collected from Kaggle. The first dataset, “Netflix Movies And TV Shows”, contains a series of information, including:
+
+- “type”: the type of movie and TV shows
+- “title” title of the show
+- “director”: director of the movie/show
+- “cast”: actors and actresses involved in the movie/show 
+- “country”: Country of origin
+- “date_added”: Date added to Netflix 
+- “release_year”: the release year of the show 
+- “rating”: TV rating of the movie/show (eg. PG-13, TV-MA)
+- “duration”: length of the movie/show 
+- “listed_in”: genre
+- “description”: the summary description of the movie/show
+
+The second dataset, “Netflix popular movies dataset”, contains an extra column of user ratings and votes to complement the first dataset, including:
+
+- “rating”: users’ ratings on IMDb
+- “votes”:  the number of ratings a show/movie receives
+
 
 ### Data Import
 
 Here we will import the csv file into the studio and take a look at the data set:
 
 ```{r}
-data <- read_csv("netflix_titles.csv")
+data <- read_csv("netflix_titles.csv") 
 movies <- read_csv("n_movies.csv")
 glimpse(data)
 glimpse(movies)
@@ -59,7 +92,6 @@ movies <- movies[, c("title", "rating", "votes")]
 
 #merge the two data sets
 merged <- merge(data, movies, by = "title")
-glimpse(merged)
 ```
 
 Then we want to rename the columns to make their names consistent. 
@@ -98,20 +130,29 @@ glimpse(merged)
 
 ### Exploratory Data Analysis
 
+#### How many movies are released in each year upto 2020?
 We first want to see when the movies are released in this dataset.
 ```{r}
 merged |>
   ggplot(aes(x = release_year)) +
-  geom_bar() +
+  geom_bar(fill = "#85B9CC") +
   labs(x = "Year released",
        y = "Number of movies",
-       title = "Most movies released after 2010") +
+       title = "The number of movies released each year",
+       subtitle = "Most movies are released after 2010") +
   theme(text = element_text(size = 15),
         plot.title.position = "plot") +
   theme_minimal() +
-  geom_vline(xintercept = 2010, color = "red") +
-  annotate("text", x = 2010, y = 250, label = "Year  2010", color = "red", size = 4)
+  geom_vline(xintercept = 2010, color = "black") +
+  annotate("text", x = 2006, y = 300, label = "2010", color = "black", size = 4) +
+  theme_classic() +
+  theme(axis.title.x = element_blank(),
+        plot.title.position = "plot",
+        axis.text.x = element_text(size = 7.5),
+        legend.position = "none")
 ```
+
+#### The distribution of ratings
 
 We see that most movies are released after 2010, which suggest most movies are contemporary, so we might be able to draw conclusions using our current knowledge.
 
@@ -119,32 +160,39 @@ We also want to see what ratings do movies generally receive.
 ```{r}
 merged |>
   ggplot(aes(x = rating)) +
-  geom_bar() +
+  geom_bar(fill = "#E5A0C0") +
   labs(x = "Audience ratings",
        y = "Number of movies",
-       title = "Most movies receive ratings of 5 - 7") +
-  theme(text = element_text(size = 15),
-        plot.title.position = "plot") +
-  theme_minimal()
+       title = "What movie ratings from users are the more common and the less common?",
+       subtitle = "Most movies receive ratings of 5 - 7") +
+  theme_classic() +
+  theme(
+        plot.title.position = "plot",
+        axis.text.x = element_text(size = 7.5),
+        legend.position = "none")
 ```
+
+#### Release date of movies
 
 The plot shows most movies receive a rating in the range of 5 to 7, so we can infer that a rating above 7 tends to be a high rating, while a rating below 5 tends to be a low rating.
 
 We also want to see when movies are added to Netflix in a year.
 ```{r}
 merged |>
-  ggplot(aes(x = month)) +
+  ggplot(aes(x = as.factor(month), fill = as.factor(month))) +
   geom_bar() +
   labs(x = "Month added",
        y = "Number of movies",
-       title = "Movies are added all year round to Netflix") +
-  scale_x_continuous(breaks = seq(1, 12)) +
-  theme(text = element_text(size = 15),
-        plot.title.position = "plot") +
-  theme_minimal()
+       title = "Movies are added all year round to Netflix",
+       subtitle = "Movies are not adde more frequently during holiday season (Nov - Dec)") +
+  scale_fill_grey(start = 0.75, end = 0.35) +
+  theme_classic() +
+  theme(legend.position = "none",
+        plot.title.position = "plot",
+        axis.text.x = element_text(size = 7.5))
 ```
 
-The visualization shows movies are added to Netflix all year round, and there is a roughly even distribution of movies across all months. Therefore, we can safely carry out our analysis when we compare holiday seasons to non-holiday seasons.
+#### How do user ratings differ in differnt time of the year?
 
 ```{r}
 merged |>
@@ -153,19 +201,55 @@ merged |>
   geom_bar() +
   labs(x = "Audience ratings",
        y = "Number of movies",
-       title = "") +
+       title = "Ratings during holiday season") +
   theme(text = element_text(size = 15),
         plot.title.position = "plot") +
-  theme_minimal()
+  theme_classic() +
+  theme(
+        plot.title.position = "plot",
+        axis.text.x = element_text(size = 7.5),
+        legend.position = "none")
+```
+
+
+```{r}
+merged |>
+  ggplot(aes(x = rating, y = as.factor(month), fill = as.factor(month),alpha = 0.9)) +
+  geom_density_ridges() +
+  labs(title = "User ratings on IMDb in different months",
+       subtitle = "The distributions of ratings in different months seem consistent throughout the year",
+       x = "User Rating",
+       y = "month") + 
+   scale_fill_manual(values = c("#5ADAD9","#5ED389","#5ED389","#5ED389",
+                                "#C44242","#C44242","#C44242","#D09452",
+                                "#D09452","#D09452","#5ADAD9","#5ADAD9")) + 
+  theme(legend.position = "none",
+        plot.title.position = "plot",
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.background = element_blank())
 ```
 
 ```{r}
 merged |>
   filter(release_year > 2010) |>
   ggplot(aes(x = month, y = rating)) +
-  geom_jitter() +
-  geom_smooth(method = "lm")
+  geom_jitter(color = "#F5800B") +
+  geom_smooth(method = "lm") +
+  labs(title = "Trend of ratings by month",
+       subtitle = "The variabiilty of ratings remain roughly the same across months") +
+  theme_classic() +
+  theme(
+        plot.title.position = "plot",
+        axis.text.x = element_text(size = 7.5),
+        legend.position = "none")
 ```
+
+The visualization shows movies are added to Netflix all year round, and there is a roughly even distribution of movies across all months. Therefore, we can safely carry out our analysis when we compare holiday seasons to non-holiday seasons.
+
+
 
 
 Now we are done with checking the basis of our analysis, we want to gain more information from the data set to have a better understanding of it. One thing really triggered our interests is the relationship between ratings and the lengths of the movies.
@@ -176,8 +260,11 @@ ggplot(merged, aes(x = rating, y = duration)) +
   labs(x = "Movie Ratings",
        y = "Movie Durations",
        title = "No clear correlation between the duration and the rating of a movie") +
-  theme(plot.title.position = "plot") +
-  theme_minimal()
+  theme_classic() +
+  theme(
+        plot.title.position = "plot",
+        axis.text.x = element_text(size = 7.5),
+        legend.position = "none")
 ```
 
 However, although we anticipated that the ratings of movies that are either too long or too short may receive low ratings, we cannot actually get this conclusion from the plot. There seems to be no correlation between the duration and the rating of a movie just through observing the plot.
