@@ -183,6 +183,24 @@ ggplot(merged, aes(x = rating, y = duration)) +
 However, although we anticipated that the ratings of movies that are either too long or too short may receive low ratings, we cannot actually get this conclusion from the plot. There seems to be no correlation between the duration and the rating of a movie just through observing the plot.
 
 We are also curious about the distribution of movie genres across different years. Since there are many years in the data, we are going to take a look at the distributions of the movie genre in three plots, from year 2010 to 2013, 2014 to 2017, and 2018 to 2021 respectively.
+
+```{r}
+merged |>
+  separate_rows(listed_in, sep = ", ") |> 
+  group_by(listed_in) |> 
+  summarise(count = n()) |>
+  arrange(desc(count))
+```
+
+```{r}
+merged |>
+  mutate(genre = case_when(
+    listed_in == "Horror Movies" ~ "Thrillers",
+    listed_in %in% "Dramas" ~ "Dramas",
+    listed_in %in% "Dramas" ~ "Dramas",))
+```
+
+
 ```{r}
 #create a tibble in longer format with rows for each combination of movie name and movie type from 2010 to 2013
 merged_long_10_13 <- merged |>
@@ -257,7 +275,7 @@ From the plots we can clearly observe that "International Movies", "Dramas", and
 
 ### Data Analysis
 
-#### Do people give higher ratings over the years since 2010?
+#### Question 1: Do people give higher ratings over the years since 2010?
 
 To find out if people give higher ratings over the years since 2010, let's take a look from the plot first to see if there is any clear trend.
 ```{r}
@@ -290,6 +308,14 @@ linear_reg() |>
 ```
 
 We can see from the model that, compared to the baseline year 2010, where movies received an average rating of 5.47, people are indeed giving lower ratings, although not significant. People tend to give around 6.63 in 2011 and 6.54 in 2012, but only tend to give 6.15 in 2020 and 5.98 in 2021.
+
+```{r}
+linear_reg() |>
+  set_engine("lm") |>
+  fit(rating ~ release_year, data = recent) |>
+  tidy()
+```
+
 
 #### Question 2: Does a movie released during a holiday season tend to receive a lower rating?
 
