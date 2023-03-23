@@ -312,7 +312,7 @@ We can see from the model that, compared to the baseline year 2010, where movies
 ```{r}
 linear_reg() |>
   set_engine("lm") |>
-  fit(rating ~ release_year, data = recent) |>
+  fit(rating ~ release_year + listed_in, data = recent) |>
   tidy()
 ```
 
