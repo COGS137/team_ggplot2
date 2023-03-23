@@ -165,10 +165,6 @@ The visualization shows movies are added to Netflix all year round, and there is
 ```{r}
 merged |>
   filter(month == 11 | month == 12 | month == 1) |>
-  summarise(mean = mean(rating, na.rm = TRUE))
-
-merged |>
-  filter(month == 11 | month == 12 | month == 1) |>
   ggplot(aes(x = rating)) +
   geom_bar() +
   labs(x = "Audience ratings",
@@ -177,10 +173,6 @@ merged |>
   theme(text = element_text(size = 15),
         plot.title.position = "plot") +
   theme_minimal()
-```
-
-```{r}
-mean(merged$rating, na.rm = TRUE)
 ```
 
 ```{r}
@@ -280,6 +272,23 @@ ggplot(merged_long_18_21, aes(x = release_year, y = count, fill = reorder(listed
 From the plots we can clearly observe that "International Movies", "Dramas", and "Comedies" appeared the most often from year 2010 to 2021. Can this possibly indicate any trends about the public's movie tastes? Further researches are needed to gain more insights.
 
 ### Data Analysis
+
+The mean ratings for movies issued during holiday seasons.
+```{r}
+merged |>
+  filter(month == 11 | month == 12) |>
+  summarise(mean = mean(rating, na.rm = TRUE))
+```
+
+The overall mean ratings of all movies.
+```{r}
+mean(merged$rating, na.rm = TRUE)
+```
+
+```{r}
+
+```
+
 
 ```{r}
 recent <- merged |>
