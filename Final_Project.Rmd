@@ -4,11 +4,9 @@ author: "Lihao Liu, Zikang Chen, Hinn Zhang"
 output: rmdformats::readthedown
 
 ---
-
-## R Markdown
+## Importing libraries
 
 Here we will load all the packages we need for this project.
-
 ```{r message=FALSE, warning=FALSE}
 library(tidyverse)
 library(dplyr)
@@ -282,8 +280,9 @@ merged |>
   arrange(desc(count))
 ```
 
-We see that "International Movies", "Dramas", and "Comedies" appear the most frequently. We wanted to see if this still holds true in each year since 2010, so we will check the distribution of movie genres across different years. Since there are many years in the data, we are going to take a look at the distributions of the movie genres in three plots, from year 2010 to 2013, 2014 to 2017, and 2018 to 2021 respectively.
-```{r}
+#### Movies count by genre
+
+```{r,message=FALSE}
 #create a tibble in longer format with rows for each combination of movie name and movie type from 2010 to 2013
 merged_long_10_13 <- merged |>
   filter(release_year >= 2010) |>
@@ -309,8 +308,10 @@ merged_long_18_21 <- merged |>
   summarise(count = n())
 ```
 
+Overall, there are an increasing number of movies produced each year from 2010 to 2021, following the previous observation. Further, we see that "International Movies", "Dramas", and "Comedies" appear the most frequently. We wanted to see if this still holds true in each year since 2010, so we will check the distribution of movie genres across different years. Since there are many years in the data, we are going to take a look at the distributions of the movie genres in three plots, from year 2010 to 2013, 2014 to 2017, and 2018 to 2021 respectively.
+
 ```{r}
-#create distribution plot for year 2010-2013
+# Create distribution plot for year 2010-2013
 ggplot(merged_long_10_13, aes(x = release_year, y = count, fill = reorder(listed_in, count))) + 
   geom_bar(stat = "identity",
            position = "dodge",
@@ -318,12 +319,15 @@ ggplot(merged_long_10_13, aes(x = release_year, y = count, fill = reorder(listed
   scale_fill_viridis(discrete = TRUE) +
   labs(x = "Years",
        y = "Count of each movie genre",
-       title = "The distributions of movie genres across years") +
+       title = "The distributions of movie genres across years",
+       subtitle = "From 2010 to 2013") +
   theme_classic() +
   theme(plot.margin = unit(c(0, 0, 0, 0), "cm"),
         plot.title.position = "plot") +
   guides(fill = guide_legend("Movie Genres"))
+```
 
+```{r}
 #create distribution plot for year 2014-2017
 ggplot(merged_long_14_17, aes(x = release_year, y = count, fill = reorder(listed_in, count))) + 
   geom_bar(stat = "identity",
@@ -332,12 +336,17 @@ ggplot(merged_long_14_17, aes(x = release_year, y = count, fill = reorder(listed
   scale_fill_viridis(discrete = TRUE) +
   labs(x = "Years",
        y = "Count of each movie genre",
-       title = "The distributions of movie genres across years") +
+       title = "The distributions of movie genres across years",
+       subtile = "From 2014 to 2017") +
   theme_classic() +
   theme(plot.margin = unit(c(0, 0, 0, 0), "cm"),
         plot.title.position = "plot") +
   guides(fill = guide_legend("Movie Genres"))
+```
 
+
+
+```{r}
 #create distribution plot for year 2018-2021
 ggplot(merged_long_18_21, aes(x = release_year, y = count, fill = reorder(listed_in, count))) + 
   geom_bar(stat = "identity",
@@ -346,7 +355,8 @@ ggplot(merged_long_18_21, aes(x = release_year, y = count, fill = reorder(listed
   scale_fill_viridis(discrete = TRUE) +
   labs(x = "Years",
        y = "Count of each movie genre",
-       title = "The distributions of movie genres across years") +
+       title = "The distributions of movie genres across years",
+       subtitle = "From 2018 to 2021") +
   theme_classic() +
   theme(plot.margin = unit(c(0, 0, 0, 0), "cm"),
         plot.title.position = "plot") +
