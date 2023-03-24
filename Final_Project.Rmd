@@ -30,20 +30,21 @@ These voluntary ratings are vital for saving time and getting valuable insights 
 
 To further investigate movie reviews, we identified the popular movie review site IMDb as the source of user comments and ratings of movies available on the most-anticipated streaming service Netflix as the research scope. Our quantitative analysis considers user scores as the component to evaluate the underlying trend among user inputs. This approach is based on the typical user flow. Specifically, users enquire about the quality of a movie through three steps: search for the movie, look at the rating scores, and click to see textual reviews if interested or necessary. User rating scores are the first-available information in the process and should have a deciding factor in the selection process.
 
-[^1]https://towardsdatascience.com/the-4-recommendation-engines-that-can-predict-your-movie-tastes-109dc4e10c52
-[^2]https://link.springer.com/article/10.1007/s10796-017-9800-0
-[^3]https://stephenfollows.com/are-film-critics-becoming-out-of-sync-with-audiences/
-[^4]https://news.usc.edu/144379/usc-study-finds-film-critics-like-filmmakers-are-largely-white-and-male/
+[^1]: https://towardsdatascience.com/the-4-recommendation-engines-that-can-predict-your-movie-tastes-109dc4e10c52
+[^2]: https://link.springer.com/article/10.1007/s10796-017-9800-0
+[^3]: https://stephenfollows.com/are-film-critics-becoming-out-of-sync-with-audiences/
+[^4]: https://news.usc.edu/144379/usc-study-finds-film-critics-like-filmmakers-are-largely-white-and-male/
 
-We define the holiday season to be from Thanksgiving to Christmas, which is from November to December.
 
 ## Problem Statement 
 
-Moviegoers who are interested in evaluation of movies before consumption have limited knowledge about how online user reviews work and their subjectivity to misinformation. By looking at the trend of recent year review, we hope to achieve a more guided overview of online user ratings to provide a better decision-making process for users.
+Moviegoers who are interested in the evaluation of movies before consumption has limited knowledge about how online user reviews work and their subjectivity to misinformation. By looking at the trend of recent year’s reviews, we hope to achieve a more guided overview of online viewer ratings to provide a better decision-making process for viewers.
 
-1. Do people give higher ratings over the years since 2010?
-2. Which movie genre receive the highest and lowest rating after 2010?
-3. Does a movie released during a holiday season tend to receive a lower rating?
+Alternatively, are the reviews available on IMDb reliable in correctly reflecting the quality of the movie or are they influenced by external factors that are less relevant to movies? Therefore, we identify the following variables related to movies in order to investigate further.
+
+1. Release year: Do people rate movies differently over the years since 2010?
+2. Genre: Do movies receive lower/higher ratings due to their genres?
+3. Holiday season: Does a movie released during a holiday season receive a higher/lower rating than a movie released during other times of the year?
 
 ## Data
 
@@ -220,7 +221,7 @@ merged |>
   labs(title = "User ratings on IMDb in different months",
        subtitle = "The distributions of ratings in different months seem consistent throughout the year",
        x = "User Rating",
-       y = "month") + 
+       y = "Month") + 
    scale_fill_manual(values = c("#5ADAD9","#5ED389","#5ED389","#5ED389",
                                 "#C44242","#C44242","#C44242","#D09452",
                                 "#D09452","#D09452","#5ADAD9","#5ADAD9")) + 
@@ -240,10 +241,12 @@ merged |>
   geom_jitter(color = "#F5800B") +
   geom_smooth(method = "lm") +
   labs(title = "Trend of ratings by month",
-       subtitle = "The variabiilty of ratings remain roughly the same across months") +
+       subtitle = "The variabiilty of ratings remain roughly the same across months",
+       x = "Month",
+       y = "Movie rating") +
   theme_classic() +
-  theme(
-        plot.title.position = "plot",
+  scale_x_continuous(breaks = seq(1, 12)) +
+  theme(plot.title.position = "plot",
         axis.text.x = element_text(size = 7.5),
         legend.position = "none")
 ```
@@ -256,7 +259,7 @@ The visualization shows movies are added to Netflix all year round, and there is
 Now we are done with checking the basis of our analysis, we want to gain more information from the data set to have a better understanding of it. One thing really triggered our interests is the relationship between ratings and the lengths of the movies.
 ```{r}
 ggplot(merged, aes(x = rating, y = duration)) +
-  geom_point() +
+  geom_point(color = "#F5800B") +
   geom_smooth(method = "lm")+
   labs(x = "Movie Ratings",
        y = "Movie Durations",
@@ -374,30 +377,50 @@ merged |>
   summarise(count = n()) |>
   arrange(desc(count))
 ```
+
 After simplifying, we see that "Dramas", "Comedies", and "Documentaries" are now the most-frequently appeared genres since 2010.
+
+```{r}
+merged |>
+  ggplot(aes(x = rating, y = as.factor(genre), fill = as.factor(genre), alpha = 1)) +
+  geom_density_ridges() +
+  labs(title = "User ratings on IMDb in different genres",
+       subtitle = "The distributions of ratings are different in different genres",
+       x = "User Rating",
+       y = "Movie Genre") + 
+   scale_fill_manual(values = c("#EBE224","#006EDD","#5ED389","#6E4400",
+                                "#8908E2","#FF8747","#FF6CE0","#FF0000",
+                                "#D09452")) + 
+  theme(legend.position = "none",
+        plot.title.position = "plot",
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.background = element_blank())
+```
 
 ### Data Analysis
 
-#### Question 1: Do people give higher ratings over the years since 2010?
+#### Question 1: Do people rate movies differently over the years since 2010?
 
 To find out if people give higher ratings over the years since 2010, let's take a look from the plot first to see if there is any clear trend.
 ```{r}
 merged |>
   filter(release_year >= 2010) |>
   ggplot(aes(x = release_year, y = rating)) +
-  geom_jitter() +
+  geom_jitter(color = "#F5800B") +
   geom_smooth(method = "lm") +
   labs(x = "Year released",
        y = "Movie ratings",
        title = "More recent movies received slightly lower ratings") +
   scale_x_continuous(breaks = seq(2010, 2021)) +
-  theme(text = element_text(size = 15),
-        plot.title.position = "plot") +
-  theme_minimal()
+  theme(plot.title.position = "plot") +
+  theme_classic(base_size = 15)
 ```
 
-We see that movies released more recently tend to receive slightly lower ratings than movies released earlier. This might be caused by a change in the public taste of movies, but we are not sure about the exact reasons behind this. 
-To be more accurate, let's build a model to see if such decreasing trend exists.
+We see that movies released more recently tend to receive slightly lower ratings than movies released earlier. This might be caused by a change in the public taste of movies, but we are not sure about the exact reasons behind this. In addition, as the plot shows, the amount of data before 2015 is significantly less than the amount of data after 2015, so the decreasing trend we found might not be accurate.
+To obtain more accurate findings, we will build a model to see if such a decreasing trend exists.
 ```{r}
 # create a data frame that contains data since 2010
 recent <- merged |>
@@ -417,11 +440,12 @@ mod_yr |>
 # check R^2
 glance(mod_yr)
 ```
+
 We can see from the model that, after 2010, where movies received an average rating of 5.47, people are indeed giving lower ratings, as we see the difference between each consecutive year and 2010 decreases, although not significant. People tend to give around 6.63 in 2011 and 6.54 in 2012, but only tend to give 6.15 in 2020 and 5.98 in 2021.
 
 To evaluate the strength of the fit of this model, we also checked the $R^2$ value, which turns out to be 0.027. Therefore, roughly only 2.7% of the variability in movie ratings can be explained by their release year. This suggests the year a movie is released might not be a strong and appropriate predictor for its rating.
 
-#### Question 2: Which movie genres receive the highest and lowest rating after 2010?
+#### Question 2: Do movies receive lower/higher ratings due to their genres??
 
 To answer this question, we first create a linear model of rating and genre.
 ```{r}
@@ -436,6 +460,7 @@ mod_gr |>
 # check R^2
 glance(mod_gr)
 ```
+
 We see that after 2010 action movies, the baseline genre, receive an average rating of 5.91. Musical movies receive an average rating of 7.58, which is the highest rating among all genres after 2010, while thrillers only receive an average rating of 5.37, which is the lowest rating among all genres after 2010. As for the most numerous movies in the dataset, documentaries receive an average rating of 6.89, dramas movies receive an average rating of 6.17, and comedies receive an average rating of 6.01. It is somewhat expected that thrillers receive low ratings, since most thrillers are of low quality.
 
 The $R^2$ of this model is 0.13. Therefore, roughly 13% of the variability in movie ratings can be explained by their genre. This $R^2$ value is greater than that of the year model, so the genre might a better predictor for its rating than the year a movie is released in.
@@ -452,51 +477,80 @@ mod_full |>
 # check R^2
 glance(mod_full)
 ```
+
 The model shows that, after 2010, when action movies received an average rating of 5.42, people give lower ratings across the years. People tend to give a rating of around 6.35 in 2011 and 6.36 in 2012, but only tend to give a rating of 5.79 in 2020 and 5.65 in 2021. Moreover, dramas receive a rating of 5.77 on average, comedies receive a rating of 5.61, and documentaries receive a rating of 6.49. It is worth noticing that musicals receive an average rating of 7.21, which makes it the highest-rated genre, while thrillers only receive an average rating of 4.98, which makes it the lowest-rated genre.
 
 The adjusted $R^2$ of this model is 0.15. Therefore, roughly 15% of the variability in movie ratings can be explained by their genre and release year. 
 
 
-#### Question 3: Does a movie released during a holiday season tend to receive a lower rating?
+#### Question 3: Does a movie released during a holiday season receive a higher/lower rating than a movie released during other times of the year?
 
-The mean ratings for movies issued during holiday seasons.
+We start by calculating the average ratings of movies released during the holiday season, non-holiday season, and all months.
+
+We define the holiday season to be from Thanksgiving to Christmas, which is from November to December.
+
 ```{r}
 recent |>
-  filter(month == 11 | month == 12) |>
+  filter(month != 11 & month != 12) |>
   summarise(`mean rating` = mean(rating, na.rm = TRUE))
 ```
 
-The overall mean ratings of all movies.
+The mean ratings of movies released in non-holiday seasons is 6.162, which is slightly lower than that of movies released during the holiday season.
+
 ```{r}
 mean(recent$rating, na.rm = TRUE)
 ```
 
-We see that the average rating is slightly higher for the movies released during the holiday season.
+The mean ratings of all movies is 6.165, which is also slightly lower than that of movies released during the holiday season.
+
+To summarize, the average rating is slightly higher for the movies released during the holiday season, compared to movies released in non-holiday seasons and all movies.
 
 ```{r}
+# convert months to factors
 recent$month <- factor(recent$month)
 
-mod <- lm(rating ~ month, data = recent)
-tidy(mod)
+# create linear model
+mod_mth <- linear_reg() |>
+  set_engine("lm") |>
+  fit(rating ~ month, data = recent)
+
+tidy(mod_mth)
+
+# check R^2
+glance(mod_mth)
 ```
-The table shows that the movie ratings in November and December are not significantly different from other months in a year, but we cannot be sure to make this conclusion. Therefore, we will conduct an ANOVA test below to check the difference. Our null hypothesis is that there is no significant difference between the movie ratings made during holiday season and other months.
+
+The table shows, for example, the average movie ratings in January is 6.2 and the average rating is 6.34 during October, while the average movie rating in November is 6.28, and the average rating in December is 6.1.
+The adjusted $R^2$ of this model is 0.011, which means roughly only 1.1% of the variability in movie ratings can be explained by their release month. 
+
+This indicates movie ratings in November and December might not be significantly different from other months in a year, but we cannot be sure to draw this conclusion due to the weak model. Therefore, we will conduct an ANOVA test below to check the difference. Our null hypothesis is that there is no significant difference between the ratings for movies released during holiday seasons and non-holiday seasons.
 
 ```{r}
+# create a column that discriminates between holiday and non-holiday seasons and convert it to factors
 recent <- recent |>
   mutate(is_nov_dec = ifelse(month %in% c(11, 12), "Nov_Dec", "Other_Months"),
          is_nov_dec = factor(is_nov_dec))
 
-# ANOVA model
+# create an ANOVA model
 anova_model <- aov(rating ~ is_nov_dec, data = recent)
 
-# Display model summary
-summary(anova_model)
+tidy(anova_model)
 ```
 
-Since the p-value is larger than 0.05, we fail to reject the null hypothesis. So there is not a difference between the movie ratings made during holiday season and other months.
+Since the p-value of 0.78 is larger than the typical alpha threshold of 0.05, we fail to reject the null hypothesis. Consequently, there is not a difference between the ratings for movies released during holiday season and other months.
 
 ### Results
 * Q1
+
+We found that people give slightly lower movies ratings over the years since 2010.
+
+* Q2
+
+We found that movies of different genres indeed receive different ratings. For example, musical movies receive an average rating of 7.58, which is the highest-rated genre, while thrillers only receive an average rating of 5.37, which is the lowest-rated genre.
+
+* Q3
+
+We found no significant difference between ratings for movie released during the holiday season compared to other months of the year.
 
 
 ## Conclusion
