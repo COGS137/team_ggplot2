@@ -4,7 +4,7 @@ author: "Lihao Liu, Zikang Chen, Hinn Zhang"
 output: rmdformats::readthedown
 
 ---
-## Importing libraries
+### Importing libraries
 
 Here we will load all the packages we need for this project.
 ```{r message=FALSE, warning=FALSE}
@@ -46,25 +46,26 @@ Alternatively, are the reviews available on IMDb reliable in correctly reflectin
 
 ## Data
 
-The two datasets for this project are collected from Kaggle. The first dataset, “Netflix Movies And TV Shows”, contains a series of information, including:
+The two datasets for this project are collected from Kaggle. The first dataset, "Netflix Movies And TV Shows", contains a series of information, including:
 
-- “type”: the type of movie and TV shows
-- “title” title of the show
-- “director”: director of the movie/show
-- “cast”: actors and actresses involved in the movie/show 
-- “country”: Country of origin
-- “date_added”: Date added to Netflix 
-- “release_year”: the release year of the show 
-- “rating”: TV rating of the movie/show (eg. PG-13, TV-MA)
-- “duration”: length of the movie/show 
-- “listed_in”: genre
-- “description”: the summary description of the movie/show
+- `type`: the type of movie and TV shows
+- `title`: title of the show
+- `director`: director of the movie/show
+- `cast`: actors and actresses involved in the movie/show 
+- `country`: Country of origin
+- `date_added`: Date added to Netflix 
+- `release_year`: the release year of the show 
+- `rating`: TV rating of the movie/show (eg. PG-13, TV-MA)
+- `duration`: length of the movie/show 
+- `listed_in`: genre
+- `description`: the summary description of the movie/show
 
-The second dataset, “Netflix popular movies dataset”, contains an extra column of user ratings and votes to complement the first dataset, including:
+The second dataset, "Netflix popular movies dataset", contains an extra column of user ratings and votes to complement the first dataset, including:
 
-- “rating”: users’ ratings on IMDb
-- “votes”:  the number of ratings a show/movie receives
+- `rating`: users' ratings on IMDb
+- `votes`:  the number of ratings a show/movie receives
 
+We plan to merge the two datasets as the second dataset contains ratings for movies while the first dataset consists of all movies (as opposed to popular shows in the second dataset).
 
 ### Data Import
 
@@ -76,6 +77,8 @@ movies <- read_csv("n_movies.csv")
 glimpse(data)
 glimpse(movies)
 ```
+
+We see that the original dataset with movie's features contains 8807 observations with 12 variables, and the dataset with movie ratings contains 9957 observations and 9 variables.
 
 ### Data Wrangling
 
@@ -122,9 +125,18 @@ merged$duration <- as.integer(merged$duration)
 
 Let's take a look at the wrangled data set.
 ```{r}
-glimpse(merged)
+skim(merged)
 ```
 
+After data cleaning, the new dataset contains 1782 samples (movies) and some missing values in columns including "director", "cast", and "country". However, we do not plan to use these features in subsequent steps. 
+
+```{r}
+merged |>
+  group_by(title) |>
+  filter(n() > 1)
+```
+
+We observed around 40 possible duplicates in the dataset. Yet, most repeated entries are re-entries due to missing values or that they are different movies with the same name (with different ratings). This issue will be addressed in the analysis automatically. 
 
 ## Analysis
 
@@ -163,7 +175,7 @@ merged |>
   geom_bar(fill = "#E5A0C0") +
   labs(x = "Audience ratings",
        y = "Number of movies",
-       title = "What movie ratings from users are the more common and the less common?",
+       title = "What movie ratings are more common and less common?",
        subtitle = "Most movies receive ratings of 5 - 7") +
   theme_classic() +
   theme(
@@ -192,11 +204,13 @@ merged |>
         axis.text.x = element_text(size = 7.5))
 ```
 
+The sample sizes of movies on Netflix are roughly even across all months, so we can safely compare holiday season movies to non-holiday season movies.
+
 #### How do user ratings differ in different time of the year?
 
 ```{r}
 merged |>
-  filter(month == 11 | month == 12 | month == 1) |>
+  filter(month == 11 | month == 12) |>
   ggplot(aes(x = rating)) +
   geom_bar() +
   labs(x = "Audience ratings",
@@ -210,6 +224,8 @@ merged |>
         axis.text.x = element_text(size = 7.5),
         legend.position = "none")
 ```
+
+The shape of the distribution of ratings for movies released in the holiday season is roughly the same as that of all movie ratings. Yet, we look to investigate the distributions more closely. 
 
 
 ```{r}
@@ -231,6 +247,8 @@ merged |>
         panel.grid.minor.y = element_blank(),
         panel.background = element_blank())
 ```
+
+The above visualization contains distribution of user ratings during all 12 months during a year. No significant seasonal bias is observed in terms of scores of movies.
 
 ```{r}
 merged |>
@@ -366,6 +384,7 @@ ggplot(merged_long_18_21, aes(x = release_year, y = count, fill = reorder(listed
 From the plots we can clearly observe that "International Movies", "Dramas", and "Comedies" appeared the most often in most of the years from 2010 to 2021. Can this possibly indicate any trends about the public's movie tastes? Further researches are needed to gain more insights.
 
 We found that the majority of the movies has several genres attached to it, so we wanted to simplify the genres to include only one category. 
+
 ```{r}
 merged <- merged |>
   mutate(genre = case_when(
@@ -409,6 +428,8 @@ merged |>
         panel.grid.minor.y = element_blank(),
         panel.background = element_blank())
 ```
+
+The plot shows different rating distributions across different movie genres. For example, musical movies seem to receive high ratings, while thrillers tend to receive low ratings. We will further explore this trend in the following Question 2.
 
 ### Data Analysis
 
@@ -455,7 +476,7 @@ We can see from the model that, after 2010, where movies received an average rat
 
 To evaluate the strength of the fit of this model, we also checked the $R^2$ value, which turns out to be 0.027. Therefore, roughly only 2.7% of the variability in movie ratings can be explained by their release year. This suggests the year a movie is released might not be a strong and appropriate predictor for its rating.
 
-#### Question 2: Do movies receive lower/higher ratings due to their genres??
+#### Question 2: Do movies receive lower/higher ratings due to their genres?
 
 To answer this question, we first create a linear model of rating and genre.
 ```{r}
@@ -488,7 +509,7 @@ mod_full |>
 glance(mod_full)
 ```
 
-The model shows that, after 2010, when action movies received an average rating of 5.42, people give lower ratings across the years. People tend to give a rating of around 6.35 in 2011 and 6.36 in 2012, but only tend to give a rating of 5.79 in 2020 and 5.65 in 2021. Moreover, dramas receive a rating of 5.77 on average, comedies receive a rating of 5.61, and documentaries receive a rating of 6.49. It is worth noticing that musicals receive an average rating of 7.21, which makes it the highest-rated genre, while thrillers only receive an average rating of 4.98, which makes it the lowest-rated genre.
+The model shows that, after 2010, when action movies received an average rating of 5.42, people give lower ratings across the years. People tend to give a rating of around 6.35 in 2011 and 6.36 in 2012, but only tend to give a rating of 5.79 in 2020 and 5.65 in 2021. Again, we see the same results that musicals receive an average rating of 7.21, which makes it the highest-rated genre, while thrillers only receive an average rating of 4.98, which makes it the lowest-rated genre. As for the most numerous genres: dramas receive a rating of 5.77 on average, comedies receive a rating of 5.61, and documentaries receive a rating of 6.49. 
 
 The adjusted $R^2$ of this model is 0.15. Therefore, roughly 15% of the variability in movie ratings can be explained by their genre and release year. 
 
@@ -499,7 +520,14 @@ We start by calculating the average ratings of movies released during the holida
 
 We define the holiday season to be from Thanksgiving to Christmas, which is from November to December.
 
-The mean ratings for movies issued during holiday seasons. 
+```{r}
+recent |>
+  filter(month == 11 | month == 12) |>
+  summarise(`mean rating` = mean(rating, na.rm = TRUE))
+```
+
+The mean ratings of movies released in holiday seasons is 6.182.
+
 ```{r}
 recent |>
   filter(month != 11 & month != 12) |>
@@ -514,8 +542,9 @@ mean(recent$rating, na.rm = TRUE)
 
 The mean ratings of all movies is 6.165, which is also slightly lower than that of movies released during the holiday season.
 
-To summarize, the average rating is slightly higher for the movies released during the holiday season, compared to movies released in non-holiday seasons and all movies.
+To summarize, the average rating is slightly higher for the movies released during the holiday season, compared to movies released in non-holiday seasons and all movies. 
 
+We also attempt to fit a linear model to further support our findings.
 ```{r}
 # convert months to factors
 recent$month <- factor(recent$month)
@@ -531,11 +560,10 @@ tidy(mod_mth)
 glance(mod_mth)
 ```
 
-
 The table shows, for example, the average movie ratings in January is 6.2 and the average rating is 6.34 during October, while the average movie rating in November is 6.28, and the average rating in December is 6.1.
 The adjusted $R^2$ of this model is 0.011, which means roughly only 1.1% of the variability in movie ratings can be explained by their release month. 
 
-This indicates movie ratings in November and December might not be significantly different from other months in a year, but we cannot be sure to draw this conclusion due to the weak model. Therefore, we will conduct an ANOVA test below to check the difference. Our null hypothesis is that there is no significant difference between the ratings for movies released during holiday seasons and non-holiday seasons.
+This indicates movie ratings in November and December might not be significantly different from other months in a year, but we cannot be sure to draw this conclusion due to the weak model. Therefore, we will conduct an ANOVA test below to check the difference. Our null hypothesis is that there is no significant difference between the ratings for movies released during holiday seasons and non-holiday seasons. We will use the typical threshold of 0.05 for the alpha value.
 
 ```{r}
 # create a column that discriminates between holiday and non-holiday seasons and convert it to factors
@@ -549,26 +577,28 @@ anova_model <- aov(rating ~ is_nov_dec, data = recent)
 tidy(anova_model)
 ```
 
-Since the p-value of 0.78 is larger than the typical alpha threshold of 0.05, we fail to reject the null hypothesis. Consequently, there is not a difference between the ratings for movies released during holiday season and other months.
+Since the p-value of 0.78 is larger than 0.05, we fail to reject the null hypothesis. Consequently, there is not a difference between the ratings for movies released during the holiday season and other months.
 
 ### Results
 * Q1
 
-We found that people give slightly lower movies ratings over the years since 2010.
+We found that people give slightly lower movies ratings over the years since 2010. However, the trend might not be significant since the linear model is weak.
+
+Therefore, we propose that the lack of significance is hardly due to shifts in user preferences or user behavior. In fact, the weak result might be due to an increased number of movies produced over the years, which caused more variation in ratings that is difficult to generalize.
 
 * Q2
 
-We found that movies of different genres indeed receive different ratings. For example, musical movies receive an average rating of 7.58, which is the highest-rated genre, while thrillers only receive an average rating of 5.37, which is the lowest-rated genre.
+We found that movies of different genres indeed receive different ratings. For example, musical movies receive an average rating of 7.58, which is the highest-rated genre, while thrillers only receive an average rating of 5.37, which is the lowest-rated genre. 
+
+The model combining release year and genre produced a stronger support for our findings in Question 1 and Question 2.
+
+This finding is particularly helpful as a user implication. Specifically, when making decisions among cross-category movies, direct comparison of numeric scores is less reliable or meaningful. Users should consider other movies in the same genre in order to correctly infer the reputation of said movies.
 
 * Q3
 
-We found no significant difference between ratings for movie released during the holiday season compared to other months of the year.
+As an extension to Q1, we looked at ratings while condtioning the presence of major holidays. We found no significant difference between ratings for movies released during the holiday season compared to other months of the year from our linear model and ANOVA test.
 
 ### Limitation
-
-Highly skewed data after 2015. Limited insights into the trend across the whole timeline
-Unexplored factors that might be more predictive of the user ratings, such as sales data and user anticipation. 
-Due to the limitation of available data, we are NOT able to confirm the submission time of the ratings. We based the analysis on the release date of the movies. 
 
 Several limitations should be considered in this study. The data used in this project is highly skewed after 2015, which limits our ability to gain insights into the trend across the entire timeline. Consequently, the findings of this study may not be representative of the entire population of movies. Our future steps could explore additional data sources or use different sampling methods to mitigate this limitation. Further, while this study explores several factors that contribute to user ratings of movies, there could be unexplored factors that might potentially be more predictive of these ratings. For example, sales data and maturity rating could influence user ratings but were not included in this analysis. Finally, due to the limitation of available data, we were not able to confirm the submission time of the ratings. Instead, we based our analysis on the release date of the movies. This may have introduced some inaccuracies in our findings as user ratings may have been submitted at different times after the movie was released. Exploring alternative methods for estimating the timing of user ratings, such as using data from social media or other online platforms, will benefit the accuracy of the results.
 
