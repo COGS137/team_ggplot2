@@ -1,7 +1,7 @@
 ---
 title: "Final Project"
 author: "Lihao Liu, Zikang Chen, Hinn Zhang"
-output: 
+output:
   html_document:
     toc: true
     toc_float: true
@@ -18,7 +18,10 @@ library(skimr)
 library(viridis)
 library(tidymodels)
 library(ggridges)
+library(rmdformats)
 ```
+
+output: 
 
 ## Introduction
 
@@ -38,11 +41,6 @@ To further investigate movie reviews, we identified the popular movie review sit
 
 ## Problem Statement 
 
-<<<<<<< HEAD
-Moviegoers who are interested in the evaluation of movies before consumption has limited knowledge about how online user reviews work and their subjectivity to misinformation. By looking at the trend of recent year’s reviews, we hope to achieve a more guided overview of online viewer ratings to provide a better decision-making process for viewers. 
-
-Alternatively, are the reviews available on IMDb reliable in correctly reflecting the quality of the movie or are they influenced by external factors that are less relevant to movies?
-=======
 Moviegoers who are interested in the evaluation of movies before consumption has limited knowledge about how online user reviews work and their subjectivity to misinformation. By looking at the trend of recent year’s reviews, we hope to achieve a more guided overview of online viewer ratings to provide a better decision-making process for viewers.
 
 Alternatively, are the reviews available on IMDb reliable in correctly reflecting the quality of the movie or are they influenced by external factors that are less relevant to movies? Therefore, we identify the following variables related to movies in order to investigate further.
@@ -50,7 +48,6 @@ Alternatively, are the reviews available on IMDb reliable in correctly reflectin
 1. Release year: Do people rate movies differently over the years since 2010?
 2. Genre: Do movies receive lower/higher ratings due to their genres?
 3. Holiday season: Does a movie released during a holiday season receive a higher/lower rating than a movie released during other times of the year?
->>>>>>> a7a5ef0a89481305af100d319c6820c9ca6998fe
 
 ## Data
 
@@ -568,12 +565,17 @@ We found that movies of different genres indeed receive different ratings. For e
 
 We found no significant difference between ratings for movie released during the holiday season compared to other months of the year.
 
+### Limitation
+
+Highly skewed data after 2015. Limited insights into the trend across the whole timeline
+Unexplored factors that might be more predictive of the user ratings, such as sales data and user anticipation. 
+Due to the limitation of available data, we are NOT able to confirm the submission time of the ratings. We based the analysis on the release date of the movies. 
+
+Several limitations should be considered in this study. The data used in this project is highly skewed after 2015, which limits our ability to gain insights into the trend across the entire timeline. Consequently, the findings of this study may not be representative of the entire population of movies. Our future steps could explore additional data sources or use different sampling methods to mitigate this limitation. Further, while this study explores several factors that contribute to user ratings of movies, there could be unexplored factors that might potentially be more predictive of these ratings. For example, sales data and maturity rating could influence user ratings but were not included in this analysis. Finally, due to the limitation of available data, we were not able to confirm the submission time of the ratings. Instead, we based our analysis on the release date of the movies. This may have introduced some inaccuracies in our findings as user ratings may have been submitted at different times after the movie was released. Exploring alternative methods for estimating the timing of user ratings, such as using data from social media or other online platforms, will benefit the accuracy of the results.
 
 ## Conclusion
 
-In conclusion, our investigation into IMDb user reviews and ratings has revealed several key insights into the reliability and factors affecting movie ratings. We found that there is a slight decline in movie ratings over the years since 2010, suggesting that user preferences and expectations might have shifted over time. Moreover, we discovered that different genres of movies receive varying ratings, with musicals enjoying the highest average rating and thrillers receiving the lowest. However, we did not find a significant difference in ratings for movies released during the holiday season compared to other months of the year.
+In conclusion, our investigation into IMDb reviews and ratings has revealed several key insights into the reliability and factors affecting movie ratings. We found that there is a slight decline in movie ratings over the years since 2010, suggesting that user preferences and expectations might have shifted over time. Moreover, we discovered that different genres of movies receive varying ratings, with musicals enjoying the highest average rating and thrillers receiving the lowest. However, we did not find a significant difference in ratings for movies released during the holiday season compared to other months of the year.
 
-These findings highlight the importance of taking a nuanced approach when interpreting online movie reviews and ratings. Users should be aware of the potential subjectivity and external factors that could influence ratings and not solely rely on them for making decisions on which movies to watch. By understanding the trends and variations in user ratings, moviegoers can make more informed choices and find content that best matches their preferences and interests.
-
-In future research, it would be worthwhile to explore other factors that might contribute to the differences in user ratings, such as the impact of marketing campaigns, social media influence, or the presence of particular actors and directors. Furthermore, developing more advanced and personalized recommendation systems that account for individual differences and preferences can help to enhance the overall movie selection experience for users. Ultimately, a deeper understanding of online movie reviews and ratings can lead to better decision-making processes for viewers and a more enjoyable movie-watching experience.
+These findings highlight the importance of taking a nuanced approach when interpreting online movie reviews and ratings. Users should be aware of the potential subjectivity and external factors that could influence ratings and not solely rely on them for making decisions on which movies to watch. By understanding the trends and variations in user ratings, moviegoers can make more informed choices and find content that best matches their preferences and interests. Ultimately, a deeper understanding of online movie reviews and ratings can lead to better decision-making processes for viewers and a more enjoyable movie-watching experience.
 
